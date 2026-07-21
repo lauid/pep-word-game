@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PEP 英语单词连连看 · 三~六年级</title>
+<style>
+  :root{
+    --cell: 78px;
+    /* 英文卡：柔和暖桃色；中文卡：清新薄荷青。两色制、精致协调、不刺眼 */
+    --en1:#fff0e6; --en2:#ffd9bf; --en-b:#f0a877; --en-t:#8a4a1e;
+    --zh1:#e6f7f4; --zh2:#c2ebe4; --zh-b:#5cb5a8; --zh-t:#1f6b60;
+    --ink:#34374b; --muted:#8b93a7;
+    --brand1:#ff8a5b; --brand2:#ff5e7e;
+    --panel:#ffffff;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    margin:0; font-family:"PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    background-attachment:fixed;
+  }
+  /* 默认风景：白天 —— 蓝天 + 太阳 + 云朵 + 远处青山（纯 CSS 绘制，无需联网） */
+  body, body.bg-day{
+    background:
+      radial-gradient(circle at 86% 14%, rgba(255,214,64,.95) 0 42px, rgba(255,238,150,.55) 47px, transparent 62px),
+      radial-gradient(ellipse 130px 54px at 22% 19%, rgba(255,255,255,.96), transparent 72%),
+      radial-gradient(ellipse 165px 62px at 64% 12%, rgba(255,255,255,.92), transparent 72%),
+      radial-gradient(ellipse 250px 84px at 89% 30%, rgba(255,255,255,.85), transparent 75%),
+      radial-gradient(ellipse 1400px 420px at 50% 130%, #74cf63 0 62%, transparent 64%),
+      radial-gradient(ellipse 1050px 360px at 22% 140%, #57b94a 0 62%, transparent 64%),
+      linear-gradient(180deg, #9fd8ff 0%, #c7ecff 48%, #eafbe7 100%);
+    background-attachment:fixed;
+  }
+  /* 黄昏：橙粉天空 + 紫山 */
+  body.bg-dusk{
+    background:
+      radial-gradient(circle at 80% 16%, rgba(255,176,72,.95) 0 38px, rgba(255,210,140,.55) 43px, transparent 60px),
+      radial-gradient(ellipse 1500px 460px at 50% 134%, #b07bd6 0 62%, transparent 64%),
+      radial-gradient(ellipse 1100px 380px at 24% 142%, #8e5fc4 0 62%, transparent 64%),
+      linear-gradient(180deg, #ffd29b 0%, #ffb088 40%, #ff9bb0 72%, #f4c7e0 100%);
+    background-attachment:fixed;
+  }
+  /* 海洋：蓝天 + 海面 + 沙滩 */
+  body.bg-ocean{
+    background:
+      radial-gradient(circle at 84% 14%, rgba(255,224,90,.95) 0 40px, rgba(255,238,160,.55) 45px, transparent 62px),
+      radial-gradient(ellipse 1500px 380px at 50% 122%, #2bb6c9 0 62%, transparent 64%),
+      radial-gradient(ellipse 1150px 320px at 30% 130%, #1f97b0 0 62%, transparent 64%),
+      linear-gradient(180deg, #aee4ff 0%, #cdf1ff 52%, #eafdff 70%, #f7efd6 100%);
+    background-attachment:fixed;
+  }
+  /* 夜空：深蓝 + 月亮 + 星点 */
+  body.bg-night{
+    background:
+      radial-gradient(circle at 82% 16%, rgba(255,255,255,.96) 0 26px, rgba(230,240,255,.55) 30px, transparent 48px),
+      radial-gradient(circle at 30% 18%, rgba(255,255,255,.85) 0 2px, transparent 4px),
+      radial-gradient(circle at 55% 10%, rgba(255,255,255,.75) 0 2px, transparent 4px),
+      radial-gradient(circle at 68% 26%, rgba(255,255,255,.75) 0 2px, transparent 4px),
+      radial-gradient(circle at 44% 33%, rgba(255,255,255,.65) 0 2px, transparent 4px),
+      radial-gradient(ellipse 1500px 420px at 50% 134%, #1d3b6e 0 62%, transparent 64%),
+      linear-gradient(180deg, #16234d 0%, #21366e 55%, #2c4a86 100%);
+    background-attachment:fixed;
+  }
+  /* 彩虹：高饱和多彩渐变 + 阳光与云朵，颜色最丰富 */
+  body.bg-rainbow{
+    background:
+      radial-gradient(circle at 84% 14%, rgba(255,214,64,.95) 0 40px, rgba(255,238,150,.5) 45px, transparent 62px),
+      radial-gradient(ellipse 150px 56px at 24% 16%, rgba(255,255,255,.95), transparent 72%),
+      radial-gradient(ellipse 190px 66px at 62% 10%, rgba(255,255,255,.9), transparent 72%),
+      linear-gradient(115deg,
+        rgba(255,99,132,.85) 0%, rgba(255,159,64,.85) 18%, rgba(255,205,86,.85) 34%,
+        rgba(75,192,120,.85) 50%, rgba(54,162,235,.85) 66%, rgba(153,102,255,.85) 82%, rgba(255,99,182,.85) 100%),
+      linear-gradient(180deg,#bfe9ff 0%, #eafaff 70%);
+    background-attachment:fixed;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:22px 16px 44px;}
+  .card{
+    background:rgba(255,255,255,.82);border-radius:22px;padding:22px 24px;
+    box-shadow:0 18px 40px rgba(60,80,120,.12), 0 2px 6px rgba(60,80,120,.06);
+    border:1px solid rgba(255,255,255,.6);
+    backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  }
+
+  /* 设置面板 */
+  h1{font-size:28px;margin:0;letter-spacing:.5px;}
+  .subtitle{color:var(--muted);margin:8px 0 2px;font-size:14px;line-height:1.6;}
+  .section-label{font-weight:700;display:block;margin:18px 0 10px;color:#4a5170;font-size:14px;}
+  .section-label::before{content:"●";color:var(--brand2);margin-right:8px;font-size:11px;vertical-align:middle;}
+  .seg{display:flex;flex-wrap:wrap;gap:10px;}
+  .seg button{
+    border:2px solid #e7edf5;background:#f7fbff;border-radius:14px;
+    padding:10px 16px;font-size:15px;cursor:pointer;color:#55607a;transition:.18s;font-weight:600;
+  }
+  .seg button:hover{border-color:#b9d6f3;transform:translateY(-1px);}
+  .seg button.on{
+    background:linear-gradient(135deg,var(--brand1),var(--brand2));
+    border-color:transparent;color:#fff;font-weight:800;
+    box-shadow:0 8px 18px rgba(255,94,126,.3);
+  }
+  /* 「全部单词」特殊模式按钮：默认就突出显示，强调不限范围 */
+  .seg button.allbtn{
+    background:linear-gradient(135deg,#a06bff,#6b8bff);
+    border-color:transparent;color:#fff;font-weight:800;
+    box-shadow:0 8px 18px rgba(123,107,255,.32);
+  }
+  .seg button.allbtn.on{ filter:brightness(1.06); }
+  .units{display:flex;flex-wrap:wrap;gap:10px;}
+  .units button{
+    border:2px solid #efe2c6;background:#fffaf0;border-radius:14px;
+    padding:9px 14px;font-size:14px;cursor:pointer;color:#7a6a4a;font-weight:600;transition:.18s;
+  }
+  .units button:hover{transform:translateY(-1px);}
+  .units button.on{
+    background:linear-gradient(135deg,#ffd36e,#f4b740);border-color:transparent;
+    color:#5a3d00;font-weight:800;box-shadow:0 6px 14px rgba(244,183,64,.35);
+  }
+  .start{
+    margin-top:22px;width:100%;border:0;border-radius:16px;padding:16px;
+    font-size:19px;font-weight:800;color:#fff;cursor:pointer;
+    background:linear-gradient(135deg,var(--brand1),var(--brand2));
+    box-shadow:0 12px 26px rgba(255,94,126,.4);transition:.18s;
+  }
+  .start:hover{transform:translateY(-2px);box-shadow:0 16px 32px rgba(255,94,126,.5);}
+  .start:active{transform:translateY(0);}
+  .start:disabled{opacity:.5;cursor:not-allowed;}
+
+  /* 游戏面板 */
+  .topbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;}
+  .topbar .pill{background:#fff;border-radius:999px;padding:9px 16px;font-weight:800;font-size:14px;
+    box-shadow:0 3px 10px rgba(60,80,120,.1);border:1px solid #eef2f8;}
+  .topbar .pill b{color:var(--brand2);}
+  .spacer{flex:1;}
+  .btn{
+    border:0;border-radius:13px;padding:10px 16px;font-weight:700;cursor:pointer;font-size:14px;
+    background:#eef4fb;color:#3a4a66;transition:.15s;
+  }
+  .btn:hover{background:#e2ecf7;transform:translateY(-1px);}
+  .btn:active{transform:translateY(0);}
+  .btn.warn{background:#ffe6e6;color:#c0392b;}
+  .btn.warn:hover{background:#ffd6d6;}
+
+  .legend{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-bottom:12px;
+    font-size:13px;color:var(--muted);font-weight:600;
+    background:#f6f9fd;border-radius:14px;padding:10px 14px;border:1px solid #eef2f8;}
+  .legend .dot{display:inline-block;width:14px;height:14px;border-radius:5px;margin-right:6px;vertical-align:-2px;}
+  .legend .en{background:linear-gradient(135deg,var(--en1),var(--en2));border:1px solid var(--en-b);}
+  .legend .zh{background:linear-gradient(135deg,var(--zh1),var(--zh2));border:1px solid var(--zh-b);}
+
+  /* 棋盘外框：柔和低饱和渐变，干净不刺眼 */
+  .boardShell{
+    position:relative;overflow:auto;padding:9px;border-radius:26px;
+    background:linear-gradient(135deg,#eef2ff,#fbeef6 50%,#eafaf1);
+    box-shadow:0 16px 40px rgba(90,100,160,.16);
+  }
+  .board{
+    position:relative;display:grid;gap:8px;margin:0 auto;width:max-content;
+    background:linear-gradient(160deg,#ffffff,#f1f6ff);
+    border-radius:20px;padding:14px;
+    box-shadow:inset 0 2px 10px rgba(80,90,140,.08);
+  }
+  .cell{
+    width:var(--cell);height:var(--cell);border-radius:16px;
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    font-size:15px;font-weight:800;padding:6px;cursor:pointer;user-select:none;line-height:1.15;
+    word-break:break-word;overflow:hidden;
+    transition:transform .12s ease, box-shadow .15s ease, opacity .25s ease;
+    color:#aeb6c6;background:#fff;border:2px dashed #e6ebf2;
+    box-shadow:0 2px 6px rgba(60,80,120,.06);
+  }
+  .cell:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(60,80,120,.12);}
+  /* 卡片配色：两色制 —— 英文暖桃、中文薄荷青。精致协调、不刺眼、不看花。
+     细腻双段渐变 + 柔和描边 + 顶部高光 + 双层阴影，做出立体质感。 */
+  .cell.en{
+    background:linear-gradient(158deg, var(--en1) 0%, var(--en2) 100%);
+    border:1.5px solid var(--en-b);
+    color:var(--en-t);
+    box-shadow:0 5px 14px rgba(240,168,119,.28), inset 0 1px 0 rgba(255,255,255,.75);
+    display:flex;flex-direction:column;gap:2px;justify-content:center;position:relative;
+  }
+  .cell.zh{
+    background:linear-gradient(158deg, var(--zh1) 0%, var(--zh2) 100%);
+    border:1.5px solid var(--zh-b);
+    color:var(--zh-t);
+    box-shadow:0 5px 14px rgba(92,181,168,.26), inset 0 1px 0 rgba(255,255,255,.7);
+    position:relative;
+  }
+  .cell .w{font-size:15px;line-height:1.1;font-weight:800;}
+  .cell .ipa{font-size:11px;line-height:1;font-weight:700;opacity:.85;letter-spacing:.3px;}
+  .cell.sel{
+    outline:4px solid var(--brand2);outline-offset:-2px;transform:scale(1.06);
+    box-shadow:0 8px 18px rgba(255,94,126,.35);
+  }
+  .cell.hint{animation:flash .5s ease 3;}
+  @keyframes flash{0%,100%{box-shadow:0 0 0 0 rgba(255,200,0,0);}50%{box-shadow:0 0 0 8px rgba(255,200,0,.65);}}
+  .cell.wrong{animation:shake .4s ease;}
+  @keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-7px);}40%{transform:translateX(7px);}60%{transform:translateX(-5px);}80%{transform:translateX(5px);}}
+  .cell.gone{opacity:0;transform:scale(.3);pointer-events:none;}
+  /* 外圈与内部空格仅作路径绕行/占位用，完全不可见，杜绝"空白卡片"让人对不上 */
+  .cell.edge,.cell.blank{visibility:hidden;pointer-events:none;background:transparent;border:none;box-shadow:none;}
+  .cell.swap{animation:swapin .28s ease;}
+  @keyframes swapin{from{opacity:.15;transform:scale(.9);}to{opacity:1;transform:scale(1);}}
+  svg.links{position:absolute;inset:0;pointer-events:none;z-index:5;overflow:visible;}
+
+  /* 结算 */
+  .overlay{position:fixed;inset:0;background:rgba(28,34,58,.55);backdrop-filter:blur(3px);
+    display:none;align-items:center;justify-content:center;z-index:50;}
+  .overlay.show{display:flex;}
+  .modal{background:#fff;border-radius:24px;padding:32px 36px;text-align:center;max-width:360px;
+    box-shadow:0 24px 60px rgba(0,0,0,.3);animation:pop-in .35s ease;}
+  @keyframes pop-in{from{transform:scale(.85);opacity:0;}to{transform:scale(1);opacity:1;}}
+  .modal h2{margin:0 0 12px;font-size:26px;}
+  .modal p{margin:8px 0;font-size:16px;color:#555f73;}
+  .modal .row{display:flex;gap:12px;margin-top:22px;}
+  .modal .row .btn{flex:1;padding:13px;font-size:15px;}
+  .modal .row .btn.primary{background:linear-gradient(135deg,var(--brand1),var(--brand2));color:#fff;border:0;
+    box-shadow:0 10px 22px rgba(255,94,126,.35);}
+  .hintbar{font-size:13px;color:var(--muted);margin-top:14px;line-height:1.7;background:#f7f9fc;
+    border-radius:12px;padding:12px 14px;}
+  .toast{
+    position:fixed;left:50%;bottom:34px;transform:translateX(-50%);
+    background:rgba(40,46,70,.94);color:#fff;padding:11px 20px;border-radius:999px;font-size:14px;
+    opacity:0;transition:opacity .3s;z-index:80;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.25);
+  }
+  .toast.show{opacity:1;}
+
+  /* 特效 */
+  .cell.pop{animation:pop .36s ease forwards;}
+  @keyframes pop{0%{transform:scale(1);}40%{transform:scale(1.3);box-shadow:0 0 0 12px rgba(255,210,0,.55);}100%{transform:scale(.2);opacity:0;}}
+  .confetti{position:fixed;width:11px;height:15px;border-radius:2px;z-index:95;pointer-events:none;}
+  .floatxt{position:fixed;z-index:96;pointer-events:none;font-weight:800;font-size:24px;
+    text-shadow:0 2px 6px rgba(0,0,0,.18);transition:transform .8s ease-out, opacity .8s ease-out;}
+  .win-emoji{font-size:64px;animation:bounce .6s ease infinite alternate;display:block;margin-bottom:6px;}
+  @keyframes bounce{from{transform:translateY(0);}to{transform:translateY(-14px);}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- 设置面板 -->
+  <section id="setup" class="card">
+    <h1>🐾 PEP 英语单词连连看</h1>
+    <p style="color:#7b8794;margin:6px 0 0">人教版三~六年级 · 英文 ↔ 中文配对 · 点两个能连起来的词即可消除并听发音</p>
+
+    <label>① 选择年级</label>
+    <div class="seg" id="gradeSeg">
+      <button data-grade="3">三年级</button>
+      <button data-grade="4">四年级</button>
+      <button data-grade="5" class="on">五年级</button>
+      <button data-grade="6">六年级</button>
+      <button data-grade="all" class="allbtn">🎲 全部单词</button>
+    </div>
+
+    <label id="bookLabel">② 选择册数</label>
+    <div class="seg" id="bookSeg">
+      <button data-book="上" class="on">上册</button>
+      <button data-book="下">下册</button>
+    </div>
+
+    <label id="unitLabel">③ 选择单元（可多选，至少 1 个）</label>
+    <div class="units" id="unitBox"></div>
+    <div id="allNote" style="display:none;color:#7b8794;font-size:14px;padding:10px 12px;background:#f0f7ff;border-radius:12px;line-height:1.6;">
+      🎲 已开启 <b>「全部单词」模式</b>：从三~六年级所有单词里随机抽取，<b>不限年级 / 册数 / 单元</b>。直接选数量点开始即可。
+    </div>
+
+    <label>④ 每组数量</label>
+    <div class="seg" id="diffSeg">
+      <button data-pairs="6">轻松 6 对</button>
+      <button data-pairs="10" class="on">标准 10 对</button>
+      <button data-pairs="14">挑战 14 对</button>
+      <button data-pairs="0">全部单元词</button>
+    </div>
+
+    <label>⑤ 连接难度（线路越宽松越好连）</label>
+    <div class="seg" id="connSeg">
+      <button data-turns="3" class="on">简单（好连）</button>
+      <button data-turns="2">普通（经典）</button>
+    </div>
+
+    <label>⑥ 发音语音（选最清晰的一个，可先试听）</label>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <select id="voiceSel" style="border-radius:12px;padding:9px 12px;font-size:14px;border:2px solid #dce6f0;background:#f7fbff;min-width:220px;"></select>
+      <button class="btn" id="voiceTest">🔈 试听 apple</button>
+      <span id="voiceNote" style="font-size:12px;color:#7b8794;"></span>
+    </div>
+
+    <label>⑦ 其他选项</label>
+    <div class="seg">
+      <button id="autoShuffleBtn" data-on="1" class="on">🔀 自动洗牌（无路可走时）</button>
+      <button id="ipaBtn" data-on="0">🔤 音标：已隐藏</button>
+    </div>
+
+    <label>⑧ 背景风景（设置面板即可预览）</label>
+    <div class="seg" id="bgSeg">
+      <button data-bg="day" class="on">🌞 白天</button>
+      <button data-bg="dusk">🌇 黄昏</button>
+      <button data-bg="ocean">🌊 海洋</button>
+      <button data-bg="night">🌙 夜空</button>
+      <button data-bg="rainbow">🌈 彩虹</button>
+    </div>
+
+    <button class="start" id="startBtn">▶ 开始游戏</button>
+    <div class="hintbar">
+      玩法：点任意卡片即可<b>听发音</b>（英文卡读单词、中文卡读释义）；点一个<b>英文</b>和一个<b>中文</b>，若是一对且能连起来就消除，并听到该<b>英文单词</b>发音。
+      <b>音标</b>默认关闭，可在「⑦ 其他选项」里开启；难度已默认调成「简单（好连）」。无可消除时自动洗牌；「提示」可高亮一组可消除的词。
+    </div>
+  </section>
+
+  <!-- 游戏面板 -->
+  <section id="game" class="card" style="display:none;margin-top:16px;">
+    <div class="topbar">
+      <button class="btn" id="backBtn">← 菜单</button>
+      <span class="pill" id="lvInfo">关卡</span>
+      <span class="pill">⏱ <span id="time">00:00</span></span>
+      <span class="pill">⭐ <span id="score">0</span></span>
+      <span class="pill">剩余 <span id="left">0</span></span>
+      <span class="spacer"></span>
+      <button class="btn" id="soundBtn">🔊 发音 开</button>
+      <button class="btn" id="hintBtn">💡 提示</button>
+      <button class="btn warn" id="shuffleBtn">🔀 洗牌</button>
+    </div>
+    <div class="legend">
+      <span><span class="dot en"></span>英文（点它听单词）</span>
+      <span><span class="dot zh"></span>中文（点它听释义）</span>
+      <span>玩法：点一个英文 + 一个中文，能连起来就消除</span>
+    </div>
+    <div class="boardShell">
+      <div class="board" id="board"></div>
+    </div>
+  </section>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2 id="winTitle">🎉 通关啦！</h2>
+    <p id="winStats"></p>
+    <div class="row">
+      <button class="btn primary" id="againBtn">再来一局</button>
+      <button class="btn" id="menuBtn">返回菜单</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="phonetics.js"></script>
+<script src="words.js"></script>
+<script>
+(function(){
+  "use strict";
+  if(typeof PEP_WORDS === "undefined"){
+    document.getElementById("setup").innerHTML =
+      "<h2>⚠️ 词库未加载</h2><p>请确认 words.js 与本页面在同一文件夹下，然后用浏览器打开 index.html。</p>";
+    return;
+  }
+  // ---------- 状态 ----------
+  var state = {
+    grade:"5", book:"上", units:[], pairs:10,
+    sound:true, voice:null, zhVoice:null, voiceLang:"en-US", voiceList:[],
+    maxTurns:3,                                   // 连线拐角上限：3=简单好连，2=经典
+    bgStyle:"day",                                // 背景风景：day/dusk/ocean/night
+    showIpa:false,                                // 是否在英文卡下方显示音标（默认隐藏，设置里可开）
+    grid:[], cellEls:[], rows:0, cols:0,
+    tiles:[], sel:null,
+    matches:0, hints:0, shuffles:0, totalPairs:0,
+    startTs:0, timer:null, finished:false, locked:false
+  };
+  var BOOKS={"3":["上","下"],"4":["上","下"],"5":["上","下"],"6":["上","下"]};
+  var MAX_PAIRS=24;
+
+  // ---------- 音标缓存（运行时从免费词典 API 拉取，localStorage 缓存，离线可用） ----------
+  var PHON_CACHE={};
+  try{ PHON_CACHE=JSON.parse(localStorage.getItem("pep_phon_cache")||"{}"); }catch(e){ PHON_CACHE={}; }
+  // 合并离线预生成的音标库（window.PEP_PHON），优先离线、无需联网即可显示
+  if(typeof window.PEP_PHON!=="undefined"){
+    for(var pk in window.PEP_PHON){ if(window.PEP_PHON[pk] && !PHON_CACHE[pk]) PHON_CACHE[pk]=window.PEP_PHON[pk]; }
+  }
+  function savePhonCache(){ try{ localStorage.setItem("pep_phon_cache",JSON.stringify(PHON_CACHE)); }catch(e){} }
+  function getIpa(en){
+    var k=en.toLowerCase();
+    if(PHON_CACHE[k]) return PHON_CACHE[k];
+    var toks=en.split(/\s+/);
+    if(toks.length>1 && toks.every(function(t){return PHON_CACHE[t.toLowerCase()];}))
+      return toks.map(function(t){return PHON_CACHE[t.toLowerCase()];}).join(" ");
+    return "";
+  }
+  function ensureIpa(words,cb){
+    var need=[];
+    words.forEach(function(w){
+      var k=w.toLowerCase();
+      if(!PHON_CACHE[k]) need.push(k);
+      w.split(/\s+/).forEach(function(tok){   // 短语拆成单词，逐个取音标再拼接
+        var tk=tok.toLowerCase();
+        if(!PHON_CACHE[tk]) need.push(tk);
+      });
+    });
+    var seen={}, missing=[];
+    need.forEach(function(k){ if(!seen[k]){ seen[k]=1; missing.push(k); } });
+    if(missing.length===0){ if(cb)cb(); return; }
+    var done=0, total=missing.length, any=false;
+    missing.forEach(function(k){
+      fetch("https://api.dictionaryapi.dev/api/v2/entries/en/"+encodeURIComponent(k))
+        .then(function(r){ return r.ok?r.json():null; })
+        .then(function(d){
+          var ipa="";
+          if(Array.isArray(d)){
+            ipa=d[0].phonetic||"";
+            if(!ipa && d[0].phonetics){ for(var i=0;i<d[0].phonetics.length;i++){ if(d[0].phonetics[i].text){ ipa=d[0].phonetics[i].text; break; } } }
+          }
+          if(ipa){ PHON_CACHE[k]=ipa; any=true; }
+        })
+        .catch(function(){})
+        .then(function(){ done++; if(done===total){ if(any) savePhonCache(); if(cb)cb(); } });
+    });
+    setTimeout(function(){ if(done<total && cb) cb(); }, 6000);  // 安全超时，绝不让游戏卡住
+  }
+  var autoShuffle=true;   // 无路可走时是否自动洗牌（可在设置里关掉）
+
+  // ---------- DOM ----------
+  function $(id){return document.getElementById(id);}
+
+  // ---------- 设置面板交互 ----------
+  function renderUnits(){
+    var box=$("unitBox"); box.innerHTML="";
+    var key=state.grade+state.book;
+    var list=PEP_WORDS[key]||[];
+    list.forEach(function(u,i){
+      var b=document.createElement("button");
+      b.textContent=u.unit;
+      b.onclick=function(){
+        var idx=state.units.indexOf(u.unit);
+        if(idx>=0){state.units.splice(idx,1);b.classList.remove("on");}
+        else{state.units.push(u.unit);b.classList.add("on");}
+      };
+      if(i===0){b.classList.add("on"); if(state.units.indexOf(u.unit)<0) state.units.push(u.unit);}
+      box.appendChild(b);
+    });
+  }
+
+  $("gradeSeg").addEventListener("click",function(e){
+    var b=e.target.closest("button"); if(!b)return;
+    state.grade=b.dataset.grade;
+    [...$("gradeSeg").children].forEach(x=>x.classList.toggle("on",x===b));
+    if(state.grade==="all"){
+      // 不限模式：隐藏册数与单元选择
+      $("bookLabel").style.display="none";
+      $("bookSeg").style.display="none";
+      $("unitLabel").style.display="none";
+      $("unitBox").style.display="none";
+      $("allNote").style.display="block";
+    } else {
+      $("bookLabel").style.display="";
+      $("bookSeg").style.display="";
+      $("unitLabel").style.display="";
+      $("unitBox").style.display="";
+      $("allNote").style.display="none";
+      state.book="上";
+      [...$("bookSeg").children].forEach(x=>x.classList.toggle("on",x.dataset.book==="上"));
+      state.units=[]; renderUnits();
+    }
+  });
+  $("bookSeg").addEventListener("click",function(e){
+    var b=e.target.closest("button"); if(!b)return;
+    state.book=b.dataset.book;
+    [...$("bookSeg").children].forEach(x=>x.classList.toggle("on",x===b));
+    state.units=[]; renderUnits();
+  });
+  $("diffSeg").addEventListener("click",function(e){
+    var b=e.target.closest("button"); if(!b)return;
+    state.pairs=parseInt(b.dataset.pairs,10);
+    [...$("diffSeg").children].forEach(x=>x.classList.toggle("on",x===b));
+  });
+  $("connSeg").addEventListener("click",function(e){
+    var b=e.target.closest("button"); if(!b)return;
+    state.maxTurns=parseInt(b.dataset.turns,10);
+    [...$("connSeg").children].forEach(x=>x.classList.toggle("on",x===b));
+  });
+  // 背景风景：切换 body 上的风景类（day 为默认，无需加类）
+  function applyBg(style){
+    state.bgStyle=style;
+    document.body.classList.remove("bg-day","bg-dusk","bg-ocean","bg-night","bg-rainbow");
+    if(style && style!=="day") document.body.classList.add("bg-"+style);
+  }
+  $("bgSeg").addEventListener("click",function(e){
+    var b=e.target.closest("button"); if(!b)return;
+    applyBg(b.dataset.bg);
+    [...$("bgSeg").children].forEach(x=>x.classList.toggle("on",x===b));
+  });
+
+  function collectWords(){
+    var pool=[]; var seen={};
+    function addFrom(list){
+      if(!list)return;
+      list.forEach(function(u){
+        u.words.forEach(function(w){
+          if(seen[w[0]])return; seen[w[0]]=1;
+          pool.push({en:w[0], zh:w[1]});
+        });
+      });
+    }
+    if(state.grade==="all"){
+      // 不限模式：遍历全部年级 / 册 / 单元
+      for(var key in PEP_WORDS){ if(PEP_WORDS.hasOwnProperty(key)) addFrom(PEP_WORDS[key]); }
+    } else {
+      state.units.forEach(function(un){
+        var u=(PEP_WORDS[state.grade+state.book]||[]).find(function(x){return x.unit===un;});
+        addFrom(u?[u]:[]);
+      });
+    }
+    return pool;
+  }
+
+  $("startBtn").addEventListener("click",function(){
+    if(state.grade!=="all" && state.units.length===0){toast("请至少选择一个单元");return;}
+    var pool=collectWords();
+    if(pool.length===0){toast("该范围暂无词库");return;}
+    var n = state.pairs>0 ? Math.min(state.pairs, pool.length, MAX_PAIRS) : Math.min(pool.length, MAX_PAIRS);
+    // 随机抽 n 对
+    shuffleArr(pool);
+    var chosen=pool.slice(0,n);
+    startGame(chosen);
+  });
+
+  // ---------- 游戏逻辑 ----------
+  function startGame(pairs){
+    state.tiles=[];
+    var id=0;
+    pairs.forEach(function(p){
+      state.tiles.push({id:id, side:"en", text:p.en, ipa:getIpa(p.en), r:0,c:0, alive:true});
+      state.tiles.push({id:id, side:"zh", text:p.zh, r:0,c:0, alive:true});
+      id++;
+    });
+    state.totalPairs=pairs.length;
+    state.matches=0; state.hints=0; state.shuffles=0; state.finished=false; state.sel=null;
+
+    var total=state.tiles.length;
+    var dim=pickDims(total);
+    state.rows=dim.rows; state.cols=dim.cols;
+
+    layoutTiles();
+    ensureSolvable();   // 保证整盘可一次性清空，杜绝"剩一张卡片"
+    buildBoardDOM();
+    $("lvInfo").textContent = (state.grade==="all" ? "全部单词" : (state.grade+"年级"+state.book+"册")) + " · "+pairs.length+"对";
+    $("setup").style.display="none";
+    $("game").style.display="block";
+    $("overlay").classList.remove("show");
+    $("left").textContent=state.totalPairs;
+    $("score").textContent="0";
+    startTimer();
+    toast("点单词卡片即可听发音，连起来的两张就能消除！");
+
+    // 异步补全音标：先缓存、再更新卡片（拉不到也不影响游戏）
+    var enWords=pairs.map(function(p){ return p.en; });
+    ensureIpa(enWords, function(){
+      state.tiles.forEach(function(t){ if(t.side==="en") t.ipa=getIpa(t.text); });
+      if(!state.finished) paintTiles();
+    });
+  }
+
+  // 计算可放置格（行优先），并把"空格"集中到最后一排末尾，避免出现中间空洞
+  function assignableSlots(){
+    var rows=state.rows, cols=state.cols;
+    var spots=[];
+    for(var r=1;r<=rows;r++) for(var c=1;c<=cols;c++) spots.push([r,c]);
+    var aliveN=state.tiles.filter(function(t){return t.alive;}).length;
+    var holes=spots.length-aliveN;
+    if(holes<0)holes=0;
+    return spots.slice(0, spots.length-holes);
+  }
+  function layoutTiles(){
+    var alive=state.tiles.filter(function(t){return t.alive;});
+    var slots=assignableSlots();
+    shuffleArr(slots);
+    for(var i=0;i<alive.length;i++){
+      alive[i].r=slots[i][0]; alive[i].c=slots[i][1];
+    }
+    rebuildGrid();
+  }
+  function rebuildGrid(){
+    var R=state.rows+2, C=state.cols+2;
+    state.grid=[];
+    for(var r=0;r<R;r++){state.grid.push(new Array(C).fill(null));}
+    state.tiles.forEach(function(t){ if(t.alive) state.grid[t.r][t.c]=t; });
+  }
+
+  // 选最"方正"且空格最少的行列，让棋盘更好看
+  function pickDims(total){
+    var best=null;
+    for(var cols=4; cols<=16; cols++){
+      var rows=Math.ceil(total/cols);
+      var holes=rows*cols-total;
+      var score=holes*100 + Math.abs(rows-cols);   // 优先少空格、再求方正
+      if(best===null || score<best.score) best={cols:cols,rows:rows,holes:holes,score:score};
+    }
+    return best;
+  }
+
+  // 贪心模拟：整盘能否被"一次性清空"（每一步都找得到一对可连的词）。
+  // 这是杜绝"玩到最后剩一张卡片"的关键：洗牌/初始布局都按它来判定。
+  function isFullySolvable(){
+    var R=state.rows+2, C=state.cols+2;
+    var g=[];
+    for(var r=0;r<R;r++){ g.push(new Array(C).fill(null)); }
+    var alive=state.tiles.filter(function(t){ return t.alive; });
+    alive.forEach(function(t){ g[t.r][t.c]=t; });
+    var removed={};
+    var left=alive.length;
+    while(left>0){
+      var byId={};
+      alive.forEach(function(t){
+        if(!removed[t.id] && g[t.r][t.c]===t) (byId[t.id]=byId[t.id]||[]).push(t);
+      });
+      var progress=false;
+      for(var id in byId){
+        var pair=byId[id];
+        if(pair.length<2) continue;
+        if(findPath(g,pair[0],pair[1])){
+          g[pair[0].r][pair[0].c]=null; g[pair[1].r][pair[1].c]=null;
+          removed[pair[0].id]=1;            // 同一 id 的两张一起标记
+          left-=2; progress=true; break;
+        }
+      }
+      if(!progress) return false;           // 卡住，说明当前布局无法清空
+    }
+    return true;
+  }
+
+  // 初始布局时反复重排，直到整盘可清空（不计为"洗牌"）
+  function ensureSolvable(){
+    var tries=0;
+    while(!isFullySolvable() && tries<200){
+      layoutTiles();
+      tries++;
+    }
+  }
+
+  function buildBoardDOM(){
+    var board=$("board");
+    board.innerHTML="";
+    board.style.gridTemplateColumns="repeat("+(state.cols+2)+", var(--cell))";
+    board.style.gridTemplateRows="repeat("+(state.rows+2)+", var(--cell))";
+    state.cellEls=[];
+    var R=state.rows+2, C=state.cols+2;
+    for(var r=0;r<R;r++){
+      state.cellEls.push([]);
+      for(var c=0;c<C;c++){
+        var isEdge=(r===0||c===0||r===state.rows+1||c===state.cols+1);
+        var d=document.createElement("div");
+        d.className="cell"+(isEdge?" edge":""); d.dataset.r=r; d.dataset.c=c;
+        board.appendChild(d);
+        state.cellEls[r].push(d);
+      }
+    }
+    // 画连线层
+    var svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+    svg.setAttribute("class","links"); svg.id="links";
+    board.appendChild(svg);
+    paintTiles();
+  }
+  function paintTiles(){
+    for(var r=0;r<state.cellEls.length;r++)
+      for(var c=0;c<state.cellEls[r].length;c++){
+        var el=state.cellEls[r][c];
+        var t=state.grid[r][c];
+        var isEdge=(r===0||c===0||r===state.rows+1||c===state.cols+1);
+        var isBlank=(!isEdge && !t);
+        el.className="cell"+(isEdge?" edge":"")+(isBlank?" blank":""); el.textContent="";
+        el.classList.remove("sel","hint","gone");
+        if(t){
+          el.classList.add(t.side);   // 两色制：英文=暖桃 / 中文=薄荷青，颜色由 CSS 决定
+          if(t.side==="en" && t.ipa && state.showIpa){
+            el.innerHTML='<span class="w">'+t.text+'</span><span class="ipa">'+t.ipa+'</span>';
+          } else {
+            el.textContent=t.text;
+          }
+        }
+      }
+  }
+
+  // 点击事件（委托）
+  $("board").addEventListener("click",function(e){
+    if(state.finished||state.locked)return;
+    var cell=e.target.closest(".cell"); if(!cell)return;
+    var r=+cell.dataset.r, c=+cell.dataset.c;
+    var t=state.grid[r][c];
+    if(!t)return;
+    onPick(t);
+  });
+
+  function onPick(t){
+    if(!state.sel){ select(t); return; }
+    if(state.sel===t){ deselect(); return; }   // 点同一个：取消
+    var a=state.sel, b=t;
+    if(a.id===b.id){
+      // 同一对：检查能否连通
+      var path=findPath(state.grid,a,b);
+      if(path){ removePair(a,b,path); deselect(); return; }
+      // 暂时连不起来：保留第一个，提示换一组或洗牌（不再抢选第二个）
+      toast("这对词现在连不起来，换一组，或点「洗牌」～");
+      return;
+    }
+    // 不是一对：轻微抖动提示，并以最新点击为准切换选择
+    [a,b].forEach(function(t){
+      var el=state.cellEls[t.r][t.c];
+      el.classList.add("wrong");
+      setTimeout(function(){ el.classList.remove("wrong"); },400);
+    });
+    deselect(); select(b); return;
+  }
+  function select(t){
+    state.sel=t;
+    state.cellEls[t.r][t.c].classList.add("sel");
+    if(state.sound){
+      if(t.side==="en") speakEn(t.text);
+      else speakZh(t.text);
+    }
+  }
+  function deselect(){
+    if(state.sel) state.cellEls[state.sel.r][state.sel.c].classList.remove("sel");
+    state.sel=null;
+  }
+
+  function removePair(a,b,path){
+    state.locked=true;   // 消除动画期间锁住点击，防止连点误判
+    drawLink(path);
+    state.grid[a.r][a.c]=null; state.grid[b.r][b.c]=null;
+    a.alive=false; b.alive=false;
+    // 特效：弹跳 + 彩屑 + 加分飘字 + 成功音
+    var ea=state.cellEls[a.r][a.c], eb=state.cellEls[b.r][b.c];
+    ea.classList.add("pop"); eb.classList.add("pop");
+    var ra=ea.getBoundingClientRect(), rb=eb.getBoundingClientRect();
+    var cx=(ra.left+ra.width/2+rb.left+rb.width/2)/2;
+    var cy=(ra.top+ra.height/2+rb.top+rb.height/2)/2;
+    burst(cx,cy,22);
+    floatText(cx,cy-10,"+100","#ff5e7e");
+    ding();
+    setTimeout(function(){
+      ea.classList.add("gone"); eb.classList.add("gone");
+      state.locked=false;   // 动画结束解锁
+    },360);
+    var enTile=(a.side==="en")? a : b;   // 始终读英文单词本身（避免点到中文卡时读错）
+    speakEn(enTile.text);   // 成功后朗读英文单词（单词发音也可点卡片触发）
+    state.matches++;
+    var remain=remainingPairs();
+    $("left").textContent=remain;
+    $("score").textContent = Math.max(0, state.matches*100 - state.hints*20 - state.shuffles*10);
+    clearLink();
+    if(remain===0){ win(); return; }
+    if(!hasAnyMove()){
+      if(autoShuffle) setTimeout(function(){ doShuffle(true); }, 250);
+      else toast("没有可消除的了，点「🔀 洗牌」继续");
+    }
+  }
+
+  function remainingPairs(){
+    var n=0; state.tiles.forEach(function(t){ if(t.alive) n++; });
+    return n/2;
+  }
+
+  // ---------- 连连看路径搜索（默认 ≤3 拐角，难度可调） ----------
+  // 关键：visited[r][c][dir] 记录"到达该格该方向所需的最小拐角数"，
+  // 只有在新路径拐角数不更优时才剪枝 —— 避免把本应连通的路径误判为连不通。
+  function findPath(grid,a,b){
+    var R=grid.length, C=grid[0].length;
+    var MT=state.maxTurns;   // 拐角上限：简单=3（好连）、普通=2（经典）
+    var dirs=[[0,1],[0,-1],[1,0],[-1,0]];
+    function inB(r,c){return r>=0&&c>=0&&r<R&&c<C;}
+    var visited=[];
+    for(var r=0;r<R;r++){ visited.push([]); for(var c=0;c<C;c++){ visited[r].push([9,9,9,9]); } }
+    var q=[];
+    for(var d=0;d<4;d++){
+      var nr=a.r+dirs[d][0], nc=a.c+dirs[d][1];
+      if(!inB(nr,nc))continue;
+      if(nr===b.r&&nc===b.c) return [{r:a.r,c:a.c},{r:b.r,c:b.c}];
+      if(grid[nr][nc]!==null)continue;
+      visited[nr][nc][d]=0;
+      q.push({r:nr,c:nc,dir:d,turns:0,path:[{r:a.r,c:a.c},{r:nr,c:nc}]});
+    }
+    while(q.length){
+      var cur=q.shift();
+      if(cur.turns>=MT)continue;
+      for(var dd=0;dd<4;dd++){
+        var rr=cur.r+dirs[dd][0], cc=cur.c+dirs[dd][1];
+        if(!inB(rr,cc))continue;
+        var nt=cur.turns+(dd===cur.dir?0:1);
+        if(nt>MT)continue;
+        if(rr===b.r&&cc===b.c) return cur.path.concat([{r:b.r,c:b.c}]);
+        if(grid[rr][cc]!==null)continue;
+        if(nt>=visited[rr][cc][dd])continue;   // 已有更优（更少拐角）到达，跳过
+        visited[rr][cc][dd]=nt;
+        q.push({r:rr,c:cc,dir:dd,turns:nt,path:cur.path.concat([{r:rr,c:cc}])});
+      }
+    }
+    return null;
+  }
+
+  // 是否还有可消除的对
+  function hasAnyMove(){
+    var alive=state.tiles.filter(function(t){return t.alive;});
+    var byId={};
+    alive.forEach(function(t){(byId[t.id]=byId[t.id]||[]).push(t);});
+    for(var id in byId){
+      var pair=byId[id];
+      if(pair.length<2)continue;
+      if(findPath(state.grid,pair[0],pair[1])) return true;
+    }
+    return false;
+  }
+  function findHint(){
+    var alive=state.tiles.filter(function(t){return t.alive;});
+    var byId={};
+    alive.forEach(function(t){(byId[t.id]=byId[t.id]||[]).push(t);});
+    for(var id in byId){
+      var pair=byId[id];
+      if(pair.length<2)continue;
+      if(findPath(state.grid,pair[0],pair[1])) return pair;
+    }
+    return null;
+  }
+
+  // ---------- 连线动画 ----------
+  function drawLink(path){
+    var svg=$("links"); if(!svg)return;
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    var pts=path.map(function(p){
+      var el=state.cellEls[p.r][p.c];
+      return (el.offsetLeft+el.offsetWidth/2)+","+(el.offsetTop+el.offsetHeight/2);
+    }).join(" ");
+    var pl=document.createElementNS("http://www.w3.org/2000/svg","polyline");
+    pl.setAttribute("points",pts);
+    pl.setAttribute("fill","none");
+    pl.setAttribute("stroke","#ff5e7e");
+    pl.setAttribute("stroke-width","6");
+    pl.setAttribute("stroke-linecap","round");
+    pl.setAttribute("stroke-linejoin","round");
+    pl.setAttribute("opacity","0.95");
+    svg.appendChild(pl);
+  }
+  function clearLink(){
+    var svg=$("links"); if(!svg)return;
+    setTimeout(function(){ while(svg.firstChild) svg.removeChild(svg.firstChild); },430);
+  }
+
+  // ---------- 洗牌 ----------
+  function doShuffle(auto){
+    if(state.finished)return;
+    state.locked=true;
+    var alive=state.tiles.filter(function(t){return t.alive;});
+    if(alive.length===0){ state.locked=false; return; }
+    var slots=assignableSlots();
+    var solved=false;
+    for(var tries=0;tries<200;tries++){
+      shuffleArr(slots);
+      for(var i=0;i<alive.length;i++){alive[i].r=slots[i][0];alive[i].c=slots[i][1];}
+      rebuildGrid();
+      if(isFullySolvable()){solved=true;break;}
+    }
+    if(!solved){ // 兜底：极少数情况退而求其次，只要有一步可走即可
+      for(var t2=0;t2<60;t2++){
+        shuffleArr(slots);
+        for(var i=0;i<alive.length;i++){alive[i].r=slots[i][0];alive[i].c=slots[i][1];}
+        rebuildGrid();
+        if(hasAnyMove()){solved=true;break;}
+      }
+    }
+    deselect(); paintTiles();
+    // 轻微淡入，避免“跳格”突兀
+    for(var rr=0;rr<state.cellEls.length;rr++)
+      for(var cc=0;cc<state.cellEls[rr].length;cc++)
+        state.cellEls[rr][cc].classList.add("swap");
+    setTimeout(function(){
+      for(var rr=0;rr<state.cellEls.length;rr++)
+        for(var cc=0;cc<state.cellEls[rr].length;cc++)
+          state.cellEls[rr][cc].classList.remove("swap");
+      state.locked=false;
+    },320);
+    if(solved){
+      if(auto) toast("🔀 没有可消除的了，已自动洗牌");
+      else toast("🔀 已洗牌");
+      state.shuffles++;
+    } else {
+      toast("已重排，仍无直接可消除的，点「💡 提示」看看");
+      state.locked=false;
+    }
+  }
+
+  // ---------- 提示 ----------
+  function doHint(){
+    if(state.finished)return;
+    var pair=findHint();
+    if(!pair){ toast("暂时没有可消除的，试试洗牌"); return; }
+    state.hints++;
+    pair.forEach(function(t){
+      var el=state.cellEls[t.r][t.c];
+      el.classList.add("hint");
+      setTimeout(function(){el.classList.remove("hint");},1600);
+    });
+    toast("💡 高亮的两个词可以连起来！");
+  }
+
+  // ---------- 计时 / 结算 ----------
+  function startTimer(){
+    state.startTs=Date.now();
+    if(state.timer)clearInterval(state.timer);
+    state.timer=setInterval(function(){
+      var s=Math.floor((Date.now()-state.startTs)/1000);
+      var mm=String(Math.floor(s/60)).padStart(2,"0");
+      var ss=String(s%60).padStart(2,"0");
+      $("time").textContent=mm+":"+ss;
+    },1000);
+  }
+  function win(){
+    state.finished=true;
+    clearInterval(state.timer);
+    var s=Math.floor((Date.now()-state.startTs)/1000);
+    var mm=String(Math.floor(s/60)).padStart(2,"0");
+    var ss=String(s%60).padStart(2,"0");
+    var score=Math.max(0, state.matches*100 - state.hints*20 - state.shuffles*10);
+    $("winStats").innerHTML="用时 <b>"+mm+":"+ss+"</b> · 得分 <b>"+score+"</b><br>提示 "+state.hints+" 次 · 洗牌 "+state.shuffles+" 次";
+    $("winTitle").innerHTML='<span class="win-emoji">🏆</span>通关啦！';
+    $("overlay").classList.add("show");
+    // 彩屑雨
+    for(var i=0;i<7;i++){
+      (function(d){ setTimeout(function(){ burst(Math.random()*window.innerWidth, -20, 28); }, d); })(i*130);
+    }
+    winFanfare();
+  }
+
+  // ---------- 发音（选最优英文语音） ----------
+  function loadVoices(){
+    if(typeof window.speechSynthesis==="undefined"){ $("voiceNote").textContent="本浏览器不支持发音"; return; }
+    var vs=window.speechSynthesis.getVoices()||[];
+    state.voiceList=vs;
+    var sel=$("voiceSel");
+    if(!sel) return;
+    // 收集中文语音（点中文卡时朗读释义用）
+    var zh=vs.filter(function(v){ return /(zh[-_](CN|TW|HK))|chinese|中文|普通话/i.test(v.lang+" "+v.name); });
+    state.zhVoice = zh.length ? zh[0] : null;
+    // 严格只保留「英文」语音（按 lang 判断），绝不用中文嗓音读英文 —— 这是之前"发音好多都不对"的根因
+    var en=vs.filter(function(v){ return /^en[-\_]?/i.test(v.lang) || /english/i.test(v.name); });
+    sel.innerHTML="";
+    if(en.length===0){
+      // 没找到任何英文嗓音：强制用系统默认英文（lang=en-US），不要拿中文嗓音将就
+      state.voice=null; state.voiceLang="en-US";
+      var o0=document.createElement("option"); o0.value=0; o0.textContent="系统默认英文嗓音";
+      sel.appendChild(o0);
+      $("voiceNote").textContent="未找到专属英文嗓音，将用系统默认英文朗读";
+      return;
+    }
+    en.forEach(function(v,i){
+      var o=document.createElement("option");
+      o.value=i; o.textContent=v.name+" ("+v.lang+")";
+      sel.appendChild(o);
+    });
+    // 优先选最清晰的语音
+    var pref=["Google US English","Microsoft Zira","Microsoft David","Samantha","Alex","Daniel","Victoria","Fred","Albert","Microsoft Mark","Microsoft Aria"];
+    var best=null;
+    for(var p=0;p<pref.length;p++){ best=en.find(function(v){return v.name===pref[p];}); if(best)break; }
+    if(!best) best=en[0];
+    state.voice=best; state.voiceLang=best.lang;
+    for(var i=0;i<en.length;i++){ if(en[i]===best){ sel.value=i; break; } }
+    $("voiceNote").textContent="已自动选择英文语音："+best.name;
+  }
+
+  // ---------- 发音（队列驱动 + watchdog 兜底，彻底杜绝"隔一次才响/偶尔不响"） ----------
+  // 旧版用 cancel() 后立刻 speak()，Chromium 会把新语音丢掉；且 onend 偶发不触发会"永久卡死"→后面全静音。
+  // 新版：队列一次只发一个，onend 后再发下一个，绝不 cancel 正在读的；额外加 3.5s watchdog 超时，
+  // 万一 onend 不触发也会自动解锁继续，绝不卡住。语音坏了自动回退系统默认。
+  var _speechQ=[];
+  var _speaking=false;
+  var _watchdog=null;
+  function speak(text, opts){
+    if(!state.sound) return;
+    if(typeof window.speechSynthesis==="undefined") return;
+    opts=opts||{};
+    _speechQ.push({text:text, opts:opts});
+    if(_speechQ.length>4) _speechQ.splice(0, _speechQ.length-4);  // 只保留最近 4 个，避免排长队
+    _runSpeech();
+  }
+  function _runSpeech(){
+    if(_speaking) return;
+    if(_speechQ.length===0) return;
+    var synth=window.speechSynthesis;
+    try{ if(synth.paused) synth.resume(); }catch(e){}
+    var item=_speechQ.shift();
+    _speaking=true;
+    var u=new SpeechSynthesisUtterance(item.text);
+    if(item.opts.voice){ u.voice=item.opts.voice; u.lang=item.opts.voice.lang; }
+    else if(state.voice && !item.opts.forceDefault){ u.voice=state.voice; u.lang=state.voice.lang; }
+    else u.lang=item.opts.lang||"en-US";
+    u.rate=item.opts.rate||0.85; u.pitch=item.opts.pitch||1; u.volume=1;
+    var done=false;
+    function finish(){
+      if(done) return; done=true;
+      _speaking=false;
+      if(_watchdog){ clearTimeout(_watchdog); _watchdog=null; }
+      if(_speechQ.length>0) _runSpeech();
+    }
+    u.onend=finish;
+    u.onerror=function(){
+      if(item.opts.voice && !item.opts.retried){     // 该语音坏了 → 回退系统默认英文再读一次
+        item.opts.voice=null; item.opts.forceDefault=true; item.opts.retried=true;
+        _speaking=false;
+        if(_watchdog){ clearTimeout(_watchdog); _watchdog=null; }
+        _speechQ.unshift(item);
+        _runSpeech();
+        return;
+      }
+      finish();
+    };
+    _watchdog=setTimeout(finish, 3500);   // Chrome 偶发不触发 onend 时的兜底，防止永久静音
+    try{ synth.speak(u); }catch(e){ finish(); }
+  }
+  // 三个便捷入口：点英文卡 / 点中文卡 / 成功提示
+  function speakEn(text){ speak(text, {voice:state.voice, lang:"en-US", rate:0.85, pitch:1}); }
+  function speakZh(text){ speak(text, {voice:state.zhVoice, lang:"zh-CN", rate:0.9, pitch:1}); }
+  function speakSuccess(){ speak("success", {voice:state.voice, lang:"en-US", rate:0.95, pitch:1.25}); }
+
+  // ---------- 特效：彩屑 / 加分飘字 / 音效 ----------
+  function burst(x,y,count){
+    count=count||24;
+    var colors=["#ff5e7e","#ffb14e","#4fb0e0","#6cd47e","#f6c453","#a06bff","#ff8a5b"];
+    for(var i=0;i<count;i++){
+      var p=document.createElement("div");
+      p.className="confetti";
+      p.style.left=x+"px"; p.style.top=y+"px";
+      p.style.background=colors[i%colors.length];
+      var dx=(Math.random()*2-1)*170;
+      var dy=120+Math.random()*230;
+      var rot=Math.random()*540;
+      var dur=700+Math.random()*500;
+      p.style.transition="transform "+dur+"ms cubic-bezier(.2,.7,.3,1), opacity "+dur+"ms ease-out";
+      document.body.appendChild(p);
+      (function(el,dx,dy,rot,dur){
+        requestAnimationFrame(function(){
+          el.style.transform="translate("+dx+"px,"+dy+"px) rotate("+rot+"deg)";
+          el.style.opacity="0";
+        });
+        setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, dur+60);
+      })(p,dx,dy,rot,dur);
+    }
+  }
+  function floatText(x,y,txt,color){
+    var d=document.createElement("div");
+    d.className="floatxt"; d.textContent=txt;
+    d.style.left=x+"px"; d.style.top=y+"px"; d.style.color=color||"#ff5e7e";
+    document.body.appendChild(d);
+    requestAnimationFrame(function(){ d.style.transform="translateY(-44px)"; d.style.opacity="0"; });
+    setTimeout(function(){ if(d.parentNode) d.parentNode.removeChild(d); },860);
+  }
+  var _actx=null;
+  function tone(freq,dur,when,vol){
+    try{
+      _actx=_actx||new (window.AudioContext||window.webkitAudioContext)();
+      if(_actx.state==="suspended") _actx.resume();   // 首次用户手势后解锁，否则音效可能不响
+      var o=_actx.createOscillator(), g=_actx.createGain();
+      o.type="sine"; o.frequency.value=freq;
+      var t=_actx.currentTime+(when||0);
+      g.gain.setValueAtTime(0.0001,t);
+      g.gain.exponentialRampToValueAtTime(vol||0.18,t+0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+(dur||0.25));
+      o.connect(g); g.connect(_actx.destination);
+      o.start(t); o.stop(t+(dur||0.25)+0.02);
+    }catch(e){}
+  }
+  function ding(){ if(state.sound) tone(880,0.18,0,0.16); }            // 消除「叮」
+  function winFanfare(){                                                 // 通关和弦
+    if(!state.sound)return;
+    [523,659,784,1047].forEach(function(f,i){ tone(f,0.4,i*0.12,0.16); });
+  }
+
+  // ---------- 工具 ----------
+  function shuffleArr(a){
+    for(var i=a.length-1;i>0;i--){
+      var j=Math.floor(Math.random()*(i+1));
+      var t=a[i];a[i]=a[j];a[j]=t;
+    }
+    return a;
+  }
+  var toastTimer=null;
+  function toast(msg){
+    var el=$("toast"); el.textContent=msg; el.classList.add("show");
+    if(toastTimer)clearTimeout(toastTimer);
+    toastTimer=setTimeout(function(){el.classList.remove("show");},1800);
+  }
+
+  // ---------- 按钮 ----------
+  $("soundBtn").addEventListener("click",function(){
+    state.sound=!state.sound;
+    this.textContent = state.sound ? "🔊 发音 开" : "🔇 发音 关";
+  });
+  $("hintBtn").addEventListener("click",doHint);
+  $("shuffleBtn").addEventListener("click",function(){doShuffle(false);});
+  $("voiceSel").addEventListener("change",function(){
+    var i=+this.value;
+    if(state.voiceList && state.voiceList[i]){ state.voice=state.voiceList[i]; state.voiceLang=state.voice.lang; }
+  });
+  $("voiceTest").addEventListener("click",function(){ speakEn("apple"); });
+  $("autoShuffleBtn").addEventListener("click",function(){
+    autoShuffle=!autoShuffle;
+    this.classList.toggle("on",autoShuffle);
+    this.textContent = autoShuffle ? "🔀 自动洗牌（无路可走时）" : "🔀 自动洗牌：关";
+  });
+  $("ipaBtn").addEventListener("click",function(){
+    state.showIpa=!state.showIpa;
+    this.classList.toggle("on",state.showIpa);
+    this.textContent = state.showIpa ? "🔤 音标显示（英文卡下方）" : "🔤 音标：已隐藏";
+    if($("game").style.display!=="none") paintTiles();   // 游戏中切换立即生效
+  });
+  $("backBtn").addEventListener("click",backToMenu);
+  $("menuBtn").addEventListener("click",backToMenu);
+  $("againBtn").addEventListener("click",function(){
+    $("overlay").classList.remove("show");
+    var pool=collectWords();
+    shuffleArr(pool);
+    var n=state.totalPairs;
+    n=Math.min(n,pool.length,MAX_PAIRS);
+    startGame(pool.slice(0,n));
+  });
+  function backToMenu(){
+    state.finished=true; clearInterval(state.timer);
+    $("overlay").classList.remove("show");
+    $("game").style.display="none";
+    $("setup").style.display="block";
+  }
+
+  // ---------- 初始化 ----------
+  applyBg(state.bgStyle);   // 应用默认背景风格
+  renderUnits();
+  if(typeof window.speechSynthesis!=="undefined"){
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged=loadVoices;   // 部分浏览器异步加载语音
+  }
+})();
+</script>
+</body>
+</html>
